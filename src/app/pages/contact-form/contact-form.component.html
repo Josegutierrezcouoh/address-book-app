@@ -1,0 +1,235 @@
+<div class="min-h-screen bg-slate-50">
+  <div class="mx-auto max-w-4xl px-4 py-8">
+    <!-- Header -->
+    <div class="mb-6 flex items-center justify-between">
+      <button
+        type="button"
+        (click)="back()"
+        class="rounded-lg border bg-white px-3 py-2 text-sm hover:bg-slate-50"
+      >
+        ← Volver
+      </button>
+
+      <h1 class="text-xl font-bold text-slate-900">
+        {{ id ? "Editar Contacto" : "Agregar Contacto" }}
+      </h1>
+    </div>
+
+    <!-- Card -->
+    <div class="rounded-xl border bg-white p-6 shadow-sm" *ngIf="!loading">
+      <!-- Datos principales -->
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div>
+          <label for="name" class="text-xs font-semibold text-slate-700">
+            Nombre <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="name"
+            class="mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-200"
+            [(ngModel)]="contact.name"
+            name="name"
+            placeholder="Nombre completo"
+          />
+        </div>
+
+        <div>
+          <label for="birthday" class="text-xs font-semibold text-slate-700">
+            Fecha de cumpleaños <span class="text-red-500">*</span>
+          </label>
+          <input
+            id="birthday"
+            type="date"
+            class="mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-200"
+            [(ngModel)]="contact.birthday"
+            name="birthday"
+          />
+        </div>
+
+        <div>
+          <label for="company" class="text-xs font-semibold text-slate-700">
+            Empresa
+          </label>
+          <input
+            id="company"
+            class="mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-200"
+            [(ngModel)]="contact.company"
+            name="company"
+            placeholder="Empresa"
+          />
+        </div>
+
+        <div>
+          <label for="website" class="text-xs font-semibold text-slate-700">
+            Página web
+          </label>
+          <input
+            id="website"
+            class="mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-200"
+            [(ngModel)]="contact.website"
+            name="website"
+            placeholder="https://"
+          />
+        </div>
+
+        <div class="md:col-span-2">
+          <label for="notes" class="text-xs font-semibold text-slate-700">
+            Notas
+          </label>
+          <textarea
+            id="notes"
+            rows="3"
+            class="mt-1 w-full rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-200"
+            [(ngModel)]="contact.notes"
+            name="notes"
+            placeholder="Notas adicionales"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Emails -->
+      <div class="mt-8">
+        <h2 class="text-sm font-semibold text-slate-900">
+          Emails <span class="text-red-500">*</span>
+        </h2>
+
+        <div
+          *ngFor="let e of contact.emails; let i = index"
+          class="mt-2 flex items-center gap-2"
+        >
+          <input
+            class="flex-1 rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-200"
+            [(ngModel)]="e.email"
+            [name]="'email' + i"
+            placeholder="correo@dominio.com"
+          />
+
+          <button
+            type="button"
+            (click)="removeEmail(i)"
+            [disabled]="contact.emails.length === 1"
+            class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 hover:bg-red-100 disabled:opacity-40"
+          >
+            Quitar
+          </button>
+        </div>
+
+        <button
+          type="button"
+          (click)="addEmail()"
+          class="mt-2 rounded-lg border px-3 py-2 text-sm hover:bg-slate-50"
+        >
+          + Añadir email
+        </button>
+      </div>
+
+      <!-- ...existing code... hasta línea 130 -->
+
+      <!-- Teléfonos -->
+      <div class="mt-8">
+        <h2 class="text-sm font-semibold text-slate-900">Teléfonos</h2>
+
+        <div
+          *ngFor="let p of contact.phones || []; let i = index"
+          class="mt-2 flex items-center gap-2"
+        >
+          <input
+            class="flex-1 rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-200"
+            [(ngModel)]="p.number"
+            [name]="'phone' + i"
+            placeholder="+1 234 567 8900"
+          />
+
+          <button
+            type="button"
+            (click)="removePhone(i)"
+            class="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 hover:bg-red-100"
+          >
+            Quitar
+          </button>
+        </div>
+
+        <button
+          type="button"
+          (click)="addPhone()"
+          class="mt-2 rounded-lg border px-3 py-2 text-sm hover:bg-slate-50"
+        >
+          + Añadir teléfono
+        </button>
+      </div>
+
+      <!-- Direcciones -->
+      <div class="mt-8">
+        <h2 class="text-sm font-semibold text-slate-900">Direcciones</h2>
+
+        <div
+          *ngFor="let a of contact.addresses || []; let i = index"
+          class="mt-3 rounded-lg border p-4"
+        >
+          <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <input
+              class="rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-200"
+              [(ngModel)]="a.street"
+              [name]="'street' + i"
+              placeholder="Calle"
+            />
+            <input
+              class="rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-200"
+              [(ngModel)]="a.city"
+              [name]="'city' + i"
+              placeholder="Ciudad"
+            />
+            <input
+              class="rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-200"
+              [(ngModel)]="a.state"
+              [name]="'state' + i"
+              placeholder="Estado"
+            />
+            <input
+              class="rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-200"
+              [(ngModel)]="a.postal_code"
+              [name]="'postal' + i"
+              placeholder="Código postal"
+            />
+          </div>
+
+          <button
+            type="button"
+            (click)="removeAddress(i)"
+            class="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 hover:bg-red-100"
+          >
+            Quitar dirección
+          </button>
+        </div>
+
+        <button
+          type="button"
+          (click)="addAddress()"
+          class="mt-2 rounded-lg border px-3 py-2 text-sm hover:bg-slate-50"
+        >
+          + Añadir dirección
+        </button>
+      </div>
+
+      <!-- Botones -->
+      <div class="mt-8 flex justify-end gap-3">
+        <button
+          type="button"
+          (click)="back()"
+          class="rounded-lg border px-4 py-2 text-sm hover:bg-slate-50"
+        >
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          (click)="save()"
+          class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800"
+        >
+          Guardar
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="text-center py-8">Cargando...</div>
+  </div>
+</div>
