@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('emails', function (Blueprint $table) {
             $table->id();
             $table->foreignId('contact_id')->constrained()->onDelete('cascade');
-            $table->string('email');
-            $table->string('type');
+            $table->string('email')->nullable();
+            $table->string('type')->nullable();
             $table->timestamps();
         });
     }
